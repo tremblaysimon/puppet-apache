@@ -302,39 +302,6 @@ class apache (
     create_resources('apache::virtualhost', $virtualhost_hash)
   }
 
-  ### Calculation of variables that dependes on arguments
-  $vdir = $::operatingsystem ? {
-    /(?i:Ubuntu|Debian|Mint)/ => "${apache::config_dir}/sites-available",
-    SLES                      => "${apache::config_dir}/vhosts.d",
-    default                   => "${apache::config_dir}/conf.d",
-  }
-
-  case $::operatingsystem {
-    /(?i:Ubuntu)/ : {
-      case $::lsbmajdistrelease {
-        /14/ : {
-          $dotconf_dir = "${apache::config_dir}/conf-available"
-        }
-        default: {
-          $dotconf_dir = "${apache::config_dir}/conf.d"
-        }
-      }
-    }
-    /(?i:Debian)/ : {
-      case $::lsbmajdistrelease {
-        /8/ : {
-          $dotconf_dir = "${apache::config_dir}/conf-available"
-        }
-        default: {
-          $dotconf_dir = "${apache::config_dir}/conf.d"
-        }
-      }
-    }
-    default: {
-      $dotconf_dir = "${apache::config_dir}/conf.d"
-    }
-  }
-
   ### Definition of some variables used in the module
   $manage_package = $apache::bool_absent ? {
     true  => 'absent',

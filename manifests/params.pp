@@ -14,6 +14,8 @@
 #
 class apache::params {
 
+
+
   ### Application specific parameters
   $package_modssl = $::operatingsystem ? {
     /(?i:Ubuntu|Debian|Mint)/ => 'libapache-mod-ssl',
@@ -110,6 +112,39 @@ class apache::params {
     /(?i:Debian|Ubuntu|Mint)/ => '/var/www',
     /(?i:Suse|OpenSuse)/      => '/srv/www/htdocs',
     default                   => '/var/www/html',
+  }
+
+  ### Calculation of variables that dependes on arguments
+  $vdir = $::operatingsystem ? {
+    /(?i:Ubuntu|Debian|Mint)/ => "${config_dir}/sites-available",
+    SLES                      => "${config_dir}/vhosts.d",
+    default                   => "${config_dir}/conf.d",
+  }
+
+  case $::operatingsystem {
+    /(?i:Ubuntu)/ : {
+      case $::lsbmajdistrelease {
+        /14/ : {
+          $dotconf_dir = "${config_dir}/conf-available"
+        }
+        default: {
+          $dotconf_dir = "${config_dir}/conf.d"
+        }
+      }
+    }
+    /(?i:Debian)/ : {
+      case $::lsbmajdistrelease {
+        /8/ : {
+          $dotconf_dir = "${config_dir}/conf-available"
+        }
+        default: {
+          $dotconf_dir = "${config_dir}/conf.d"
+        }
+      }
+    }
+    default: {
+      $dotconf_dir = "${config_dir}/conf.d"
+    }
   }
 
   $ports_conf_path = $::operatingsystem ? {

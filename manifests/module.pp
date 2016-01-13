@@ -119,7 +119,8 @@ define apache::module (
         exec { "/usr/sbin/a2enmod ${name}":
           unless    => "/bin/sh -c '[ -L ${apache::config_dir}/mods-enabled/${name}.load ] && [ ${apache::config_dir}/mods-enabled/${name}.load -ef ${apache::config_dir}/mods-available/${name}.load ]'",
           notify    => $manage_service_autorestart,
-          require   => Package['apache'],
+          require   => [ Package['apache'],
+                         File["ApacheModule_${name}_conf"]],
           subscribe => $exec_a2enmod_subscribe,
         }
       }

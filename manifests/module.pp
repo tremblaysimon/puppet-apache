@@ -97,7 +97,7 @@ define apache::module (
       notify  => $manage_service_autorestart,
       require => Package['apache'],
     }
-    $exec_a2enmod_require = File["ApacheModule_${name}_conf"
+    $exec_a2enmod_require = File["ApacheModule_${name}_conf"]
   }
   else {
     $exec_a2enmod_require = Package['apache']

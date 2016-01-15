@@ -81,7 +81,6 @@ define apache::module (
 
   }
 
-  $file_apache_module_dependency = ''
   if $templatefile != '' {
     $module_conf_path = $::operatingsystem ? {
       /(?i:Ubuntu|Debian|Mint)/ => "${apache::config_dir}/mods-available/${name}.conf",
@@ -99,6 +98,9 @@ define apache::module (
       require => Package['apache'],
     }
     $file_apache_module_dependency = File["ApacheModule_${name}_conf"]
+  }
+  else {
+    $file_apache_module_dependency = ''
   }
 
 

@@ -81,7 +81,7 @@ define apache::module (
 
   }
 
-
+  $file_apache_module_dependency = ''
   if $templatefile != '' {
     $module_conf_path = $::operatingsystem ? {
       /(?i:Ubuntu|Debian|Mint)/ => "${apache::config_dir}/mods-available/${name}.conf",
@@ -98,6 +98,7 @@ define apache::module (
       notify  => $manage_service_autorestart,
       require => Package['apache'],
     }
+    $file_apache_module_dependency = File["ApacheModule_${name}_conf"]
   }
 
 
@@ -120,7 +121,7 @@ define apache::module (
           unless    => "/bin/sh -c '[ -L ${apache::config_dir}/mods-enabled/${name}.load ] && [ ${apache::config_dir}/mods-enabled/${name}.load -ef ${apache::config_dir}/mods-available/${name}.load ]'",
           notify    => $manage_service_autorestart,
           require   => [ Package['apache'],
-                         File["ApacheModule_${name}_conf"]],
+                         $file_apache_module_dependency],
           subscribe => $exec_a2enmod_subscribe,
         }
       }

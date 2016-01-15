@@ -97,10 +97,10 @@ define apache::module (
       notify  => $manage_service_autorestart,
       require => Package['apache'],
     }
-    $file_apache_module_dependency = File["ApacheModule_${name}_conf"]
+    $exec_a2enmod_require = File["ApacheModule_${name}_conf"
   }
   else {
-    $file_apache_module_dependency = ''
+    $exec_a2enmod_require = Package['apache']
   }
 
 
@@ -122,8 +122,7 @@ define apache::module (
         exec { "/usr/sbin/a2enmod ${name}":
           unless    => "/bin/sh -c '[ -L ${apache::config_dir}/mods-enabled/${name}.load ] && [ ${apache::config_dir}/mods-enabled/${name}.load -ef ${apache::config_dir}/mods-available/${name}.load ]'",
           notify    => $manage_service_autorestart,
-          require   => [ Package['apache'],
-                         $file_apache_module_dependency],
+          require   => $exec_a2enmod_require,
           subscribe => $exec_a2enmod_subscribe,
         }
       }
